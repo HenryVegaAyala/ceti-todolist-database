@@ -1,0 +1,32 @@
+name: "${COMPOSE_PROJECT_NAME}"
+
+services:
+  oracle_database:
+    image: gvenzl/oracle-free:latest
+    container_name: oracle-database
+    restart: always
+    environment:
+      ORACLE_PASSWORD: "${ORACLE_PASSWORD}"
+    ports:
+      - "${ORACLE_PORT}:1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - ./docker/oracle/script_setup.sql:/container-entrypoint-initdb.d/setup/01-script_setup.sql:ro
+      - ./docker/oracle/01-setup.sh:/container-entrypoint-initdb.d/01-setup.sh:ro
+    networks:
+      - database-network
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh" ]
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    shm_size: '1g'
+
+
+volumes:
+  oracle-data:
+    driver: local
+
+networks:
+  database-network:
+    driver: bridge

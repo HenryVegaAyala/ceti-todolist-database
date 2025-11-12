@@ -11,8 +11,8 @@ services:
       - "${ORACLE_PORT}:1521"
     volumes:
       - oracle-data:/opt/oracle/oradata
-      - ./docker/oracle/script_setup.sql:/container-entrypoint-initdb.d/setup/01-script_setup.sql:ro
-      - ./docker/oracle/01-setup.sh:/container-entrypoint-initdb.d/01-setup.sh:ro
+#      - ./docker/oracle/script_setup.sql:/container-entrypoint-initdb.d/setup/01-script_setup.sql:ro
+#      - ./docker/oracle/01-setup.sh:/container-entrypoint-initdb.d/01-setup.sh:ro
     networks:
       - database-network
     healthcheck:

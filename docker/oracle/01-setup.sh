@@ -14,7 +14,7 @@ echo "Oracle Database disponible. Ejecutando script de setup..."
 
 # Ejecutar el script SQL
 sqlplus -s sys/${ORACLE_PASSWORD}@//localhost:1521/FREE as sysdba <<EOF
-@/container-entrypoint-initdb.d/script_setup.sql
+@/container-entrypoint-initdb.d/setup/01-script_setup.sql
 EXIT;
 EOF
 

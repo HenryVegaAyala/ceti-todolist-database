@@ -35,7 +35,7 @@ grant connect, resource to developer;
 -- grant unlimited tablespace to developer;
 
 -- Cambiar al esquema del usuario developer
-ALTER SESSION SET CURRENT_SCHEMA = TODO_LIST;
+ALTER SESSION SET CURRENT_SCHEMA = DEVELOPER;
 
 commit;
 

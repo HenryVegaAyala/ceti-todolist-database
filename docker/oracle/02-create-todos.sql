@@ -1,6 +1,9 @@
 -- Script de inicialización para la base de datos Oracle
 -- TodoList con Clean Architecture
 
+-- Cambiar al esquema DEVELOPER donde se crearán las tablas
+ALTER SESSION SET CURRENT_SCHEMA = DEVELOPER;
+
 -- Crear secuencia para IDs
 CREATE SEQUENCE TODO_SEQ
 START WITH 1

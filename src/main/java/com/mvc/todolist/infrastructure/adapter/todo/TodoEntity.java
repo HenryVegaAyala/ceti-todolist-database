@@ -1,13 +1,14 @@
 package com.mvc.todolist.infrastructure.adapter.todo;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "todos", schema = "DEVELOPER")
 public class TodoEntity {
@@ -31,19 +32,6 @@ public class TodoEntity {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    public TodoEntity() {
-
-    }
-
-    public TodoEntity(Long id, String title, String description, boolean completed, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.completed = completed;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 
     @PrePersist
     protected void onCreate() {

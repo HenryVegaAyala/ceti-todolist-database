@@ -1,15 +1,15 @@
-package com.mvc.todolist.application.usecase;
+package com.mvc.todolist.application.usecase.todo;
 
 import com.mvc.todolist.domain.model.Todo;
 import com.mvc.todolist.domain.port.TodoRepositoryPort;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DeleteTodoUserCase {
+public class DeleteTodoUseCase {
 
     private final TodoRepositoryPort todoRepositoryPort;
 
-    public DeleteTodoUserCase(TodoRepositoryPort todoRepositoryPort) {
+    public DeleteTodoUseCase(TodoRepositoryPort todoRepositoryPort) {
         this.todoRepositoryPort = todoRepositoryPort;
     }
 

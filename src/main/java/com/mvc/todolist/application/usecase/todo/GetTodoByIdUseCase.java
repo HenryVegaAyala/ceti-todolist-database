@@ -1,4 +1,4 @@
-package com.mvc.todolist.application.usecase;
+package com.mvc.todolist.application.usecase.todo;
 
 import com.mvc.todolist.domain.model.Todo;
 import com.mvc.todolist.domain.port.TodoRepositoryPort;

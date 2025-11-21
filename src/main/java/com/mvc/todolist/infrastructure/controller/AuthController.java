@@ -2,9 +2,9 @@ package com.mvc.todolist.infrastructure.controller;
 
 import com.mvc.todolist.domain.model.User;
 import com.mvc.todolist.domain.port.UserRepositoryPort;
-import com.mvc.todolist.infrastructure.dto.AuthResponse;
-import com.mvc.todolist.infrastructure.dto.LoginRequest;
-import com.mvc.todolist.infrastructure.dto.RegisterRequest;
+import com.mvc.todolist.infrastructure.dto.auth.AuthResponse;
+import com.mvc.todolist.infrastructure.dto.auth.LoginRequest;
+import com.mvc.todolist.infrastructure.dto.auth.RegisterRequest;
 import com.mvc.todolist.infrastructure.security.JwtService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

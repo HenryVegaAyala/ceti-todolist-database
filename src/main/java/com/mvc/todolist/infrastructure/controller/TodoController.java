@@ -1,10 +1,10 @@
 package com.mvc.todolist.infrastructure.controller;
 
-import com.mvc.todolist.application.usecase.*;
+import com.mvc.todolist.application.usecase.todo.*;
 import com.mvc.todolist.domain.model.Todo;
-import com.mvc.todolist.infrastructure.dto.CreateTodoRequest;
-import com.mvc.todolist.infrastructure.dto.TodoResponse;
-import com.mvc.todolist.infrastructure.dto.UpdateTodoRequest;
+import com.mvc.todolist.infrastructure.dto.todo.CreateTodoRequest;
+import com.mvc.todolist.infrastructure.dto.todo.TodoResponse;
+import com.mvc.todolist.infrastructure.dto.todo.UpdateTodoRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,16 +16,16 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/todos")
 public class TodoController {
 
-    private final CreateTodoUserCase createTodoUserCase;
-    private final UpdateTodoUserCase updateTodoUserCase;
-    private final DeleteTodoUserCase deleteTodoUserCase;
+    private final CreateTodoUseCase createTodoUseCase;
+    private final UpdateTodoUseCase updateTodoUseCase;
+    private final DeleteTodoUseCase deleteTodoUseCase;
     private final GetTodoByIdUseCase getTodoByIdUseCase;
     private final GetAllTodosUseCase getAllTodosUseCase;
 
-    public TodoController(CreateTodoUserCase createTodoUserCase, UpdateTodoUserCase updateTodoUserCase, DeleteTodoUserCase deleteTodoUserCase, GetTodoByIdUseCase getTodoByIdUseCase, GetAllTodosUseCase getAllTodosUseCase) {
-        this.createTodoUserCase = createTodoUserCase;
-        this.updateTodoUserCase = updateTodoUserCase;
-        this.deleteTodoUserCase = deleteTodoUserCase;
+    public TodoController(CreateTodoUseCase createTodoUseCase, UpdateTodoUseCase updateTodoUseCase, DeleteTodoUseCase deleteTodoUseCase, GetTodoByIdUseCase getTodoByIdUseCase, GetAllTodosUseCase getAllTodosUseCase) {
+        this.createTodoUseCase = createTodoUseCase;
+        this.updateTodoUseCase = updateTodoUseCase;
+        this.deleteTodoUseCase = deleteTodoUseCase;
         this.getTodoByIdUseCase = getTodoByIdUseCase;
         this.getAllTodosUseCase = getAllTodosUseCase;
     }
@@ -42,7 +42,7 @@ public class TodoController {
 
     @PostMapping
     public ResponseEntity<TodoResponse> createTodo(@RequestBody CreateTodoRequest request) {
-        Todo todo = createTodoUserCase.execute(request.getTitle(), request.getDescription());
+        Todo todo = createTodoUseCase.execute(request.getTitle(), request.getDescription());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(TodoResponse.fromDomain(todo));
     }
@@ -50,7 +50,7 @@ public class TodoController {
     @PutMapping("/{id}")
     public ResponseEntity<TodoResponse> updateTodo(@PathVariable Long id, @RequestBody UpdateTodoRequest request) {
         try {
-            Todo todo = updateTodoUserCase.execute(id, request.getTitle(), request.getDescription(), request.getCompleted());
+            Todo todo = updateTodoUseCase.execute(id, request.getTitle(), request.getDescription(), request.getCompleted());
 
             return ResponseEntity.ok(TodoResponse.fromDomain(todo));
 
@@ -62,7 +62,7 @@ public class TodoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<TodoResponse> deleteTodo(@PathVariable Long id) {
         try {
-            deleteTodoUserCase.execute(id);
+            deleteTodoUseCase.execute(id);
 
             return ResponseEntity.noContent().build();
         } catch (Exception e) {

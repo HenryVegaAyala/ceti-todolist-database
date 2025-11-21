@@ -8,10 +8,14 @@ API REST para gestión de tareas (TodoList) construida con Spring Boot 3.5.7, Or
 - 🔐 **Autenticación JWT** con Spring Security
 - 👤 **Registro y login** de usuarios
 - 🏗️ **Arquitectura Hexagonal** (Puertos y Adaptadores)
-- 🐳 **Oracle Database** en Docker
+- 🐳 **Oracle Database** en Docker (Oracle Free 23ai)
 - 📊 **Spring Data JPA** con Hibernate
 - 🛡️ **Manejo global de excepciones**
 - 📈 **Spring Boot Actuator** para monitoreo
+- 🔒 **Encriptación de contraseñas** con BCrypt
+- 📝 **DTOs** para separación de capas
+- 🚦 **Validaciones** de entrada
+- 🔄 **Mappers** para conversión entre entidades y DTOs
 
 ## 🛠️ Tecnologías
 
@@ -98,12 +102,13 @@ todolist-oracle/
 │   │   ├── java/com/mvc/todolist/
 │   │   │   ├── TodolistApplication.java
 │   │   │   ├── application/
-│   │   │   │   └── usecase/              # Casos de uso (lógica de negocio)
-│   │   │   │       ├── CreateTodoUserCase.java
-│   │   │   │       ├── UpdateTodoUserCase.java
-│   │   │   │       ├── DeleteTodoUserCase.java
-│   │   │   │       ├── GetTodoByIdUseCase.java
-│   │   │   │       └── GetAllTodosUseCase.java
+│   │   │   │   └── usecase/
+│   │   │   │       └── todo/             # Casos de uso de Todos
+│   │   │   │           ├── CreateTodoUseCase.java
+│   │   │   │           ├── UpdateTodoUseCase.java
+│   │   │   │           ├── DeleteTodoUseCase.java
+│   │   │   │           ├── GetTodoByIdUseCase.java
+│   │   │   │           └── GetAllTodosUseCase.java
 │   │   │   ├── domain/
 │   │   │   │   ├── model/                # Modelos de dominio
 │   │   │   │   │   ├── Todo.java
@@ -114,7 +119,15 @@ todolist-oracle/
 │   │   │   └── infrastructure/
 │   │   │       ├── adapter/              # Adaptadores (implementaciones)
 │   │   │       │   ├── todo/
+│   │   │       │   │   ├── TodoEntity.java
+│   │   │       │   │   ├── TodoJpaRepository.java
+│   │   │       │   │   ├── TodoMapper.java
+│   │   │       │   │   └── TodoRepositoryAdapter.java
 │   │   │       │   └── user/
+│   │   │       │       ├── UserEntity.java
+│   │   │       │       ├── UserJpaRepository.java
+│   │   │       │       ├── UserMapper.java
+│   │   │       │       └── UserRepositoryAdapter.java
 │   │   │       ├── config/               # Configuraciones
 │   │   │       │   └── JwtProperties.java
 │   │   │       ├── constant/             # Constantes
@@ -123,28 +136,41 @@ todolist-oracle/
 │   │   │       │   ├── TodoController.java
 │   │   │       │   └── AuthController.java
 │   │   │       ├── dto/                  # DTOs (Request/Response)
-│   │   │       │   ├── CreateTodoRequest.java
-│   │   │       │   ├── UpdateTodoRequest.java
-│   │   │       │   ├── TodoResponse.java
-│   │   │       │   ├── LoginRequest.java
-│   │   │       │   ├── RegisterRequest.java
-│   │   │       │   └── AuthResponse.java
+│   │   │       │   ├── auth/
+│   │   │       │   │   ├── LoginRequest.java
+│   │   │       │   │   ├── RegisterRequest.java
+│   │   │       │   │   └── AuthResponse.java
+│   │   │       │   └── todo/
+│   │   │       │       ├── CreateTodoRequest.java
+│   │   │       │       ├── UpdateTodoRequest.java
+│   │   │       │       └── TodoResponse.java
 │   │   │       ├── exception/            # Manejo de excepciones
 │   │   │       │   ├── GlobalExceptionHandler.java
 │   │   │       │   ├── ErrorResponse.java
 │   │   │       │   └── ResourceNotFoundException.java
 │   │   │       └── security/             # Seguridad JWT
 │   │   │           ├── JwtService.java
-│   │   │           └── CustomUserDetailsService.java
+│   │   │           ├── CustomUserDetailsService.java
+│   │   │           ├── JwtAuthenticationFilter.java
+│   │   │           ├── JwtAuthenticationEntryPoint.java
+│   │   │           ├── JwtAuthenticationHandler.java
+│   │   │           ├── JwtAccessDeniedHandler.java
+│   │   │           └── SecurityConfig.java
 │   │   └── resources/
 │   │       └── application.properties    # Configuración de la aplicación
 │   └── test/
+│       └── java/com/mvc/todolist/
+│           └── TodolistApplicationTests.java
 ├── docker/
 │   └── oracle/
 │       ├── 01-setup.sh                   # Script de inicialización
+│       ├── 02-create-todos.sql           # Creación tabla TODOS
+│       ├── 03-create-users.sql           # Creación tabla USERS
 │       └── script_setup.sql              # Creación de usuario developer
 ├── docker-compose.yml                    # Docker Compose para Oracle
 ├── pom.xml                               # Dependencias Maven
+├── mvnw                                  # Maven Wrapper (Linux/Mac)
+├── mvnw.cmd                              # Maven Wrapper (Windows)
 └── README.md
 ```
 
@@ -196,10 +222,55 @@ GET /api/todos
 Authorization: Bearer <token>
 ```
 
+**Respuesta exitosa (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "title": "Aprender Spring Boot",
+    "description": "Completar el tutorial de Spring Boot con Oracle",
+    "completed": false,
+    "createdAt": "2025-01-21T10:00:00",
+    "updatedAt": "2025-01-21T10:00:00"
+  },
+  {
+    "id": 2,
+    "title": "Implementar API REST",
+    "description": "Crear endpoints con arquitectura hexagonal",
+    "completed": true,
+    "createdAt": "2025-01-21T11:00:00",
+    "updatedAt": "2025-01-21T12:00:00"
+  }
+]
+```
+
 #### Obtener una tarea por ID
 ```http
 GET /api/todos/{id}
 Authorization: Bearer <token>
+```
+
+**Respuesta exitosa (200 OK):**
+```json
+{
+  "id": 1,
+  "title": "Aprender Spring Boot",
+  "description": "Completar el tutorial de Spring Boot con Oracle",
+  "completed": false,
+  "createdAt": "2025-01-21T10:00:00",
+  "updatedAt": "2025-01-21T10:00:00"
+}
+```
+
+**Error - Tarea no encontrada (404 Not Found):**
+```json
+{
+  "timestamp": "2025-01-21T10:30:00",
+  "status": 404,
+  "error": "Recurso no encontrado",
+  "message": "No se encontró la tarea con ID: 999",
+  "path": "/api/todos/999"
+}
 ```
 
 #### Crear una nueva tarea
@@ -211,6 +282,18 @@ Content-Type: application/json
 {
   "title": "Aprender Spring Boot",
   "description": "Completar el tutorial de Spring Boot con Oracle"
+}
+```
+
+**Respuesta exitosa (201 Created):**
+```json
+{
+  "id": 3,
+  "title": "Aprender Spring Boot",
+  "description": "Completar el tutorial de Spring Boot con Oracle",
+  "completed": false,
+  "createdAt": "2025-01-21T14:30:00",
+  "updatedAt": "2025-01-21T14:30:00"
 }
 ```
 
@@ -227,10 +310,27 @@ Content-Type: application/json
 }
 ```
 
+**Respuesta exitosa (200 OK):**
+```json
+{
+  "id": 1,
+  "title": "Aprender Spring Boot - Actualizado",
+  "description": "Completar el tutorial avanzado",
+  "completed": true,
+  "createdAt": "2025-01-21T10:00:00",
+  "updatedAt": "2025-01-21T15:00:00"
+}
+```
+
 #### Eliminar una tarea
 ```http
 DELETE /api/todos/{id}
 Authorization: Bearer <token>
+```
+
+**Respuesta exitosa (204 No Content):**
+```
+Sin contenido
 ```
 
 ### 📊 Actuator (Monitoreo)
@@ -379,3 +479,4 @@ Este proyecto implementa **Arquitectura Hexagonal** (Puertos y Adaptadores):
 - ✅ Mantenible
 - ✅ Independiente de frameworks
 - ✅ Facilita cambios tecnológicos
+

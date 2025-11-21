@@ -1,4 +1,4 @@
-package com.mvc.todolist.infrastructure.dto;
+package com.mvc.todolist.infrastructure.dto.todo;
 
 import com.mvc.todolist.domain.model.Todo;
 import lombok.Getter;

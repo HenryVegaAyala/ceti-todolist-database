@@ -1,4 +1,4 @@
-package com.mvc.todolist.infrastructure.adapter;
+package com.mvc.todolist.infrastructure.adapter.todo;
 
 import com.mvc.todolist.domain.model.Todo;
 import com.mvc.todolist.domain.port.TodoRepositoryPort;

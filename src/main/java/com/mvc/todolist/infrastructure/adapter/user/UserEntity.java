@@ -1,49 +1,48 @@
-package com.mvc.todolist.infrastructure.adapter;
+package com.mvc.todolist.infrastructure.adapter.user;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
 @Entity
-@Table(name = "todos", schema = "DEVELOPER")
-public class TodoEntity {
+@Table(name = "users")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserEntity {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
+    @Column(unique = true, nullable = false, length = 50)
+    private String username;
 
     @Column(nullable = false, length = 100)
-    private String description;
+    private String email;
 
     @Column(nullable = false)
-    private boolean completed;
+    private String password;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private String roles = "ROLE_ADMIN";
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean enabled = true;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
-    public TodoEntity() {
-
-    }
-
-    public TodoEntity(Long id, String title, String description, boolean completed, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.completed = completed;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 
     @PrePersist
     protected void onCreate() {

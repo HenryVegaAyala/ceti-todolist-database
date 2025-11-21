@@ -1,4 +1,4 @@
-package com.mvc.todolist.infrastructure.adapter;
+package com.mvc.todolist.infrastructure.adapter.todo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

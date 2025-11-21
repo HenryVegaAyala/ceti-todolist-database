@@ -26,26 +26,29 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return Optional.empty();
+        return userJpaRepository.findByUsername(username)
+                .map(userMapper::toDomain);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return Optional.empty();
+        return userJpaRepository.findByEmail(email)
+                .map(userMapper::toDomain);
     }
 
     @Override
     public Optional<User> findById(Long id) {
-        return Optional.empty();
+        return userJpaRepository.findById(id)
+                .map(userMapper::toDomain);
     }
 
     @Override
     public boolean existsByUsername(String username) {
-        return false;
+        return userJpaRepository.existsByUsername(username);
     }
 
     @Override
     public boolean existsByEmail(String email) {
-        return false;
+        return userJpaRepository.existsByEmail(email);
     }
 }

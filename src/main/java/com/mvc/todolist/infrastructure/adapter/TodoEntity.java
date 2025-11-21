@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 public class TodoEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "todo_seq_gen")
-    @SequenceGenerator(name = "todo_seq_gen", sequenceName = "TODO_SEQ", allocationSize = 1)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)

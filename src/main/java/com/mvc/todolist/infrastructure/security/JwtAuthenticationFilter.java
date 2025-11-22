@@ -1,5 +1,6 @@
 package com.mvc.todolist.infrastructure.security;
 
+import com.mvc.todolist.infrastructure.constant.SecurityConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,8 +18,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static com.mvc.todolist.infrastructure.constant.SecurityConstants.PUBLIC_ENDPOINTS;
-
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -29,8 +28,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
+        // Omitir el filtro JWT para endpoints públicos
         String requestPath = request.getServletPath();
-
         if (shouldNotFilter(requestPath)) {
             filterChain.doFilter(request, response);
             return;
@@ -63,31 +62,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-
         filterChain.doFilter(request, response);
     }
 
     private boolean shouldNotFilter(String path) {
+        return Arrays.stream(SecurityConstants.PUBLIC_ENDPOINTS)
+                .anyMatch(pattern -> {
+                    // Normalizar el path
+                    String normalizedPath = path.endsWith("/") ? path : path + "/";
+                    String normalizedPattern = pattern.endsWith("/") ? pattern : pattern + "/";
 
-        return Arrays.stream(PUBLIC_ENDPOINTS).anyMatch(pattern -> {
+                    // Manejar patrones con /**
+                    if (pattern.endsWith("/**")) {
+                        String basePattern = pattern.substring(0, pattern.length() - 3);
+                        return path.equals(basePattern) || path.startsWith(basePattern + "/");
+                    }
 
-            ///  Normalizar rutas con o sin barra final
-            String normalizedPath = path.endsWith("/") ? pattern : pattern + "/";
-            String normalizedPattern = pattern.endsWith("/") ? pattern : pattern + "/";
+                    // Manejar patrones con *
+                    if (pattern.contains("*")) {
+                        String regex = pattern.replace("**", ".*").replace("*", "[^/]*");
+                        return path.matches(regex);
+                    }
 
-            // Manejar patrones con **
-            if (pattern.endsWith("/**")) {
-                String basePattern = pattern.substring(0, pattern.length() - 3);
-                return path.equals(basePattern) || path.startsWith(basePattern + "/");
-            }
-
-            // Manejar patrones con *
-            if (pattern.contains("*")) {
-                String regex = pattern.replace("**", ".*").replace("*", "[^/]*");
-                return path.matches(regex);
-            }
-
-            return path.equals(pattern) || normalizedPath.equals(normalizedPattern);
-        });
+                    // Coincidencia exacta
+                    return path.equals(pattern) || normalizedPath.equals(normalizedPattern);
+                });
     }
 }
+

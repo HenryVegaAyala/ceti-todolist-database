@@ -3,11 +3,16 @@ package com.mvc.todolist.infrastructure.adapter.user;
 import com.mvc.todolist.domain.model.User;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
+
+    private final RoleMapper roleMapper;
+
+    public UserMapper(RoleMapper roleMapper) {
+        this.roleMapper = roleMapper;
+    }
 
     public User toDomain(UserEntity userEntity) {
 
@@ -20,7 +25,11 @@ public class UserMapper {
                 .username(userEntity.getUsername())
                 .email(userEntity.getEmail())
                 .password(userEntity.getPassword())
-                .roles(new HashSet<>(Arrays.asList(userEntity.getRoles().split(","))))
+                .roles(userEntity.getRoles() != null
+                        ? userEntity.getRoles().stream()
+                                .map(roleMapper::toDomain)
+                                .collect(Collectors.toSet())
+                        : null)
                 .enabled(userEntity.getEnabled())
                 .createdAt(userEntity.getCreatedAt())
                 .updatedAt(userEntity.getUpdatedAt())
@@ -37,7 +46,11 @@ public class UserMapper {
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getRoles() != null ? String.join(",", user.getRoles()) : "ROLE_USUARIO")
+                .roles(user.getRoles() != null
+                        ? user.getRoles().stream()
+                                .map(roleMapper::toEntity)
+                                .collect(Collectors.toSet())
+                        : null)
                 .enabled(user.isEnabled())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())

@@ -30,7 +30,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .authorities(user.getRoles().stream()
-                        .map(SimpleGrantedAuthority::new)
+                        .map(role -> new SimpleGrantedAuthority(role.getName()))
                         .collect(Collectors.toList()))
                 .accountExpired(false)
                 .accountLocked(false)

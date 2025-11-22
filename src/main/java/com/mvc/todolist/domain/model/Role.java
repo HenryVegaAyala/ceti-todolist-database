@@ -6,21 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Role {
     private Long id;
-    private String username;
-    private String email;
-    private String password;
-    @Builder.Default
-    private Set<Role> roles = new HashSet<>();
-    private boolean enabled;
+    private String name;
+    private String description;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
+

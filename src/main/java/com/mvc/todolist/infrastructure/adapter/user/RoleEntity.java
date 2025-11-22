@@ -11,12 +11,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "roles")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity {
+public class RoleEntity {
 
     @Id
     @Column(name = "id")
@@ -24,32 +24,20 @@ public class UserEntity {
     private Long id;
 
     @Column(unique = true, nullable = false, length = 50)
-    private String username;
+    private String name;
 
-    @Column(nullable = false, length = 100)
-    private String email;
-
-    @Column(nullable = false)
-    private String password;
-
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    @Builder.Default
-    private Set<RoleEntity> roles = new HashSet<>();
-
-    @Builder.Default
-    @Column(nullable = false)
-    private Boolean enabled = true;
+    @Column(length = 255)
+    private String description;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    @Builder.Default
+    private Set<UserEntity> users = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {
@@ -66,3 +54,4 @@ public class UserEntity {
         updatedAt = LocalDateTime.now();
     }
 }
+

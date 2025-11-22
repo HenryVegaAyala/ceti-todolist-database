@@ -1,21 +1,21 @@
 package com.mvc.todolist.infrastructure.adapter.user;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-@Table(name = "roles")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity // Marca esta clase como una entidad JPA que se mapea a una tabla en la base de datos.
+@Table(name = "roles") // Especifica el nombre de la tabla en la base de datos. En este caso, la tabla se llamará roles.
+@Getter // Genera automáticamente métodos getter para todos los campos (de Lombok).
+@Setter // Genera automáticamente métodos setter para todos los campos (de Lombok).
+@Builder // Implementa el patrón Builder para crear instancias de la clase de forma fluida (de Lombok).
+@NoArgsConstructor // Genera un constructor sin argumentos, requerido por JPA (de Lombok).
+@AllArgsConstructor // Genera un constructor con todos los campos como parámetros (de Lombok).
+@ToString(exclude = "users") // Genera el método toString() excluyendo el campo users para evitar referencias circulares (de Lombok).
+@EqualsAndHashCode(exclude = "users") // Genera los métodos equals() y hashCode() excluyendo el campo users para evitar problemas con relaciones bidireccionales (de Lombok).
 public class RoleEntity {
 
     @Id

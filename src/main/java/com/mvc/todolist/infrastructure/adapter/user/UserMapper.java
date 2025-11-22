@@ -1,8 +1,11 @@
 package com.mvc.todolist.infrastructure.adapter.user;
 
+import com.mvc.todolist.domain.model.Role;
 import com.mvc.todolist.domain.model.User;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,16 +23,20 @@ public class UserMapper {
             return null;
         }
 
+        // Siempre inicializar con HashSet, nunca null
+       Set<Role> domainRoles = new HashSet<>();
+        if (userEntity.getRoles() != null && !userEntity.getRoles().isEmpty()) {
+            domainRoles = userEntity.getRoles().stream()
+                    .map(roleMapper::toDomain)
+                    .collect(Collectors.toSet());
+        }
+
         return User.builder()
                 .id(userEntity.getId())
                 .username(userEntity.getUsername())
                 .email(userEntity.getEmail())
                 .password(userEntity.getPassword())
-                .roles(userEntity.getRoles() != null
-                        ? userEntity.getRoles().stream()
-                                .map(roleMapper::toDomain)
-                                .collect(Collectors.toSet())
-                        : null)
+                .roles(domainRoles)
                 .enabled(userEntity.getEnabled())
                 .createdAt(userEntity.getCreatedAt())
                 .updatedAt(userEntity.getUpdatedAt())
@@ -41,16 +48,20 @@ public class UserMapper {
             return null;
         }
 
+        // Siempre inicializar con HashSet, nunca null
+        Set<RoleEntity> entityRoles = new HashSet<>();
+        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+            entityRoles = user.getRoles().stream()
+                    .map(roleMapper::toEntity)
+                    .collect(Collectors.toSet());
+        }
+
         return UserEntity.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getRoles() != null
-                        ? user.getRoles().stream()
-                                .map(roleMapper::toEntity)
-                                .collect(Collectors.toSet())
-                        : null)
+                .roles(entityRoles)
                 .enabled(user.isEnabled())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())

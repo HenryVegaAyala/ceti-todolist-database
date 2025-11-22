@@ -5,28 +5,60 @@ import com.mvc.todolist.domain.port.UserRepositoryPort;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 public class UserRepositoryAdapter implements UserRepositoryPort {
 
     private final UserJpaRepository userJpaRepository;
+    private final RoleJpaRepository roleJpaRepository;
     private final UserMapper userMapper;
 
-    public UserRepositoryAdapter(UserJpaRepository userJpaRepository, UserMapper userMapper) {
+    public UserRepositoryAdapter(UserJpaRepository userJpaRepository, RoleJpaRepository roleJpaRepository, UserMapper userMapper) {
         this.userJpaRepository = userJpaRepository;
+        this.roleJpaRepository = roleJpaRepository;
         this.userMapper = userMapper;
     }
 
     @Override
     public User save(User user) {
         UserEntity entity = userMapper.toEntity(user);
+
+        // Si el usuario tiene roles, obtenerlos desde la base de datos
+        // para asegurar que son entidades administradas
+        if (entity.getRoles() != null && !entity.getRoles().isEmpty()) {
+            Set<RoleEntity> managedRoles = new java.util.HashSet<>();
+            for (RoleEntity role : entity.getRoles()) {
+                RoleEntity managedRole = null;
+
+                // Buscar primero por ID si existe
+                if (role.getId() != null) {
+                    managedRole = roleJpaRepository.findById(role.getId()).orElse(null);
+                }
+
+                // Si no se encuentra por ID, intentar por nombre
+                if (managedRole == null && role.getName() != null) {
+                    managedRole = roleJpaRepository.findByName(role.getName()).orElse(null);
+                }
+
+                // Agregar el rol administrado si se encontró
+                if (managedRole != null) {
+                    managedRoles.add(managedRole);
+                }
+            }
+
+            // Reemplazar los roles con las entidades administradas
+            entity.setRoles(managedRoles);
+        }
+
         UserEntity savedEntity = userJpaRepository.save(entity);
         return userMapper.toDomain(savedEntity);
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        Optional<UserEntity> entity = userJpaRepository.findByUsername(username);
+
+        Optional<UserEntity> entity = userJpaRepository.findByUsernameWithRoles(username);
 
         return entity.map(userMapper::toDomain);
     }

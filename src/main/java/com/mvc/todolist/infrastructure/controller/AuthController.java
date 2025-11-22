@@ -56,10 +56,19 @@ public class AuthController {
             User user = userRepositoryPort.findByUsername(request.getUsername())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+            // Log de depuración
+            System.out.println("Usuario encontrado: " + user.getUsername());
+            System.out.println("Roles del usuario: " + user.getRoles());
+            System.out.println("Cantidad de roles: " + (user.getRoles() != null ? user.getRoles().size() : "null"));
+
             // Extraer nombres de roles
-            Set<String> roleNames = user.getRoles().stream()
-                    .map(Role::getName)
-                    .collect(Collectors.toSet());
+            Set<String> roleNames = user.getRoles() != null
+                    ? user.getRoles().stream()
+                        .map(Role::getName)
+                        .collect(Collectors.toSet())
+                    : new HashSet<>();
+
+            System.out.println("Nombres de roles extraídos: " + roleNames);
 
             // Generar token JWT
             Map<String, Object> extraClaims = new HashMap<>();

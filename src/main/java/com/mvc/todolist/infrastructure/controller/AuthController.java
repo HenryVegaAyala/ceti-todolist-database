@@ -153,7 +153,7 @@ public class AuthController {
             String username = authentication.getName();
 
             User user = userRepositoryPort.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado con username: " + username));
 
             UserInfoResponse response = UserInfoResponse.builder()
                     .id(user.getId())

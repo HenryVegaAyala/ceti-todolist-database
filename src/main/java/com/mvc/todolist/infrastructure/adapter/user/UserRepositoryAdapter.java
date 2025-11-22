@@ -26,8 +26,9 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return userJpaRepository.findByUsername(username)
-                .map(userMapper::toDomain);
+        Optional<UserEntity> entity = userJpaRepository.findByUsername(username);
+
+        return entity.map(userMapper::toDomain);
     }
 
     @Override

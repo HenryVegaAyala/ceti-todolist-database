@@ -36,9 +36,9 @@ public class RoleEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-    @Builder.Default
-    private Set<UserEntity> users = new HashSet<>();
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY) // Define relación N:N inversa con carga perezosa
+    @Builder.Default // Inicializa el Set cuando se usa el builder de Lombok
+    private Set<UserEntity> users = new HashSet<>(); // Colección de usuarios asociados al rol (sin duplicados)
 
     @PrePersist
     protected void onCreate() {

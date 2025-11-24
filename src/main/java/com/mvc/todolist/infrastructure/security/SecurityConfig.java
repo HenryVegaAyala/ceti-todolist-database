@@ -19,7 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.mvc.todolist.infrastructure.constant.SecurityConstants.PUBLIC_ENDPOINTS;
+import static com.mvc.todolist.infrastructure.constant.SecurityConstants.*;
 
 @Configuration
 @EnableWebSecurity
@@ -39,10 +39,20 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                        // Endpoints públicos - sin autenticación
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .anyRequest()
-                        .authenticated()
+
+                        // Endpoints administrativos - solo ADMIN
+                        .requestMatchers(ADMIN_ENDPOINTS).hasRole(ROLE_ADMIN)
+
+                        // Gestión de usuarios - solo ADMIN
+                        .requestMatchers(USER_ENDPOINTS).hasRole(ROLE_ADMIN)
+
+                        // Endpoints de todos - accesible por usuarios autenticados (USER y ADMIN)
+                        .requestMatchers(TODO_ENDPOINTS).hasAnyRole(ROLE_USER, ROLE_ADMIN)
+
+                        // Cualquier otra petición requiere autenticación
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

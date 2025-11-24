@@ -4,6 +4,7 @@ import com.mvc.todolist.domain.model.User;
 import com.mvc.todolist.domain.port.UserRepositoryPort;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -83,5 +84,23 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     @Override
     public boolean existsByEmail(String email) {
         return userJpaRepository.existsByEmail(email);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userJpaRepository.findAll()
+                .stream()
+                .map(userMapper::toDomain)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Override
+    public boolean existsById(Long id) {
+        return userJpaRepository.existsById(id);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        userJpaRepository.deleteById(id);
     }
 }

@@ -13,7 +13,7 @@ public class DeleteTodoUseCase {
         this.todoRepositoryPort = todoRepositoryPort;
     }
 
-    public Todo execute(Long id) {
+    public void execute(Long id) {
         if (!todoRepositoryPort.existsById(id)) {
             throw new RuntimeException("Todo not found with id: " + id);
         }
@@ -21,6 +21,5 @@ public class DeleteTodoUseCase {
         Todo todoToDelete = todoRepositoryPort.findById(id).orElseThrow(() -> new RuntimeException("Todo not found with id: " + id));
         todoRepositoryPort.deleteById(id);
 
-        return todoToDelete;
     }
 }

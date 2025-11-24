@@ -18,7 +18,8 @@ public class DeleteTodoUseCase {
             throw new RuntimeException("Todo not found with id: " + id);
         }
 
-        Todo todoToDelete = todoRepositoryPort.findById(id).orElseThrow(() -> new RuntimeException("Todo not found with id: " + id));
+        todoRepositoryPort.findById(id).orElseThrow(() -> new RuntimeException("Todo not found with id: " + id));
+
         todoRepositoryPort.deleteById(id);
 
     }

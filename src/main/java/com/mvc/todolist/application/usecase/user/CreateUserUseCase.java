@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -30,7 +31,7 @@ public class CreateUserUseCase {
         }
 
         // Obtener los roles
-        Set<Role> roles = new java.util.HashSet<>();
+        Set<Role> roles = new HashSet<>();
         for (String roleName : roleNames) {
             Role role = roleRepositoryPort.findByName(roleName)
                     .orElseThrow(() -> new IllegalArgumentException("Rol no encontrado: " + roleName));

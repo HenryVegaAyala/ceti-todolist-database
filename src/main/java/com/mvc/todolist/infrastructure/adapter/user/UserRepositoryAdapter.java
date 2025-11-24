@@ -6,6 +6,7 @@ import com.mvc.todolist.infrastructure.adapter.role.RoleEntity;
 import com.mvc.todolist.infrastructure.adapter.role.RoleJpaRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -30,7 +31,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         // Si el usuario tiene roles, obtenerlos desde la base de datos
         // para asegurar que son entidades administradas
         if (entity.getRoles() != null && !entity.getRoles().isEmpty()) {
-            Set<RoleEntity> managedRoles = new java.util.HashSet<>();
+            Set<RoleEntity> managedRoles = new HashSet<>();
             for (RoleEntity role : entity.getRoles()) {
                 RoleEntity managedRole = null;
 

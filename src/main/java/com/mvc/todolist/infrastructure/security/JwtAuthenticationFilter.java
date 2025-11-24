@@ -45,25 +45,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
-        username = jwtService.extractUsername(jwt);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            } else {
-                System.err.println("Token NO válido para usuario: " + username);
-            }
+        // Validar que el token no esté vacío
+        if (jwt.trim().isEmpty()) {
+            System.err.println("Token JWT vacío en la solicitud a: " + requestPath);
+            filterChain.doFilter(request, response);
+            return;
         }
+
+        try {
+            username = jwtService.extractUsername(jwt);
+
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+                if (jwtService.isTokenValid(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                } else {
+                    System.err.println("Token NO válido para usuario: " + username);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error al procesar el token JWT: " + e.getMessage());
+            // Continuar sin autenticar al usuario
+        }
+
         filterChain.doFilter(request, response);
     }
 

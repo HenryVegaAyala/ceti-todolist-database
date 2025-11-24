@@ -30,7 +30,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        Map<String, Object> body = new HashMap<>();
+        Map<String, Object> body = new HashMap<>(); // es una interfaz que se define en clave valor para retornar un json
         body.put("timestamp", LocalDateTime.now().toString());
         body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
         body.put("error", "No autorizado");

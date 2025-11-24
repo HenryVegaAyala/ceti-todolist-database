@@ -1,4 +1,4 @@
-package com.mvc.todolist.infrastructure.adapter.user;
+package com.mvc.todolist.infrastructure.adapter.role;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

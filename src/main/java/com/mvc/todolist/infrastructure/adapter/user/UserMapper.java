@@ -2,6 +2,8 @@ package com.mvc.todolist.infrastructure.adapter.user;
 
 import com.mvc.todolist.domain.model.Role;
 import com.mvc.todolist.domain.model.User;
+import com.mvc.todolist.infrastructure.adapter.role.RoleEntity;
+import com.mvc.todolist.infrastructure.adapter.role.RoleMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;

@@ -1,5 +1,6 @@
 package com.mvc.todolist.infrastructure.adapter.user;
 
+import com.mvc.todolist.infrastructure.adapter.role.RoleEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

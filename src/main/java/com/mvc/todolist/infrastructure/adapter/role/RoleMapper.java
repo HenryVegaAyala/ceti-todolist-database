@@ -1,4 +1,4 @@
-package com.mvc.todolist.infrastructure.adapter.user;
+package com.mvc.todolist.infrastructure.adapter.role;
 import com.mvc.todolist.domain.model.Role;
 import org.springframework.stereotype.Component;
 

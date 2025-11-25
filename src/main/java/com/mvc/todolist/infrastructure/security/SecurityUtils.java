@@ -11,30 +11,14 @@ import java.util.Optional;
 public class SecurityUtils {
 
     public static Optional<String> getCurrentUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()
-                || authentication.getPrincipal().equals("anonymousUser")) {
-            return Optional.empty();
-        }
-
-        String username = null;
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails) principal).getUsername();
-        } else if (principal instanceof String) {
-            username = (String) principal;
-        }
-
-        return Optional.ofNullable(username);
+        return getCurrentAuthentication()
+                .map(auth -> extractUsername(auth.getPrincipal()));
     }
 
     public static Optional<Authentication> getCurrentAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated()
-                || authentication.getPrincipal().equals("anonymousUser")) {
+        if (isInvalidAuthentication(authentication)) {
             return Optional.empty();
         }
 
@@ -44,22 +28,34 @@ public class SecurityUtils {
     public static Optional<UserDetails> getCurrentUserDetails() {
         return getCurrentAuthentication()
                 .map(Authentication::getPrincipal)
-                .filter(principal -> principal instanceof UserDetails)
-                .map(principal -> (UserDetails) principal);
+                .filter(UserDetails.class::isInstance)
+                .map(UserDetails.class::cast);
     }
 
     public static boolean isAuthenticated() {
-        return getCurrentUsername().isPresent();
+        return getCurrentAuthentication().isPresent();
     }
 
     public static boolean hasRole(String role) {
+        String roleToCheck = role.startsWith("ROLE_") ? role : "ROLE_" + role;
         return getCurrentAuthentication()
-                .map(auth -> {
-                    String roleToCheck = role.startsWith("ROLE_") ? role : "ROLE_" + role;
-                    return auth.getAuthorities().stream()
-                            .anyMatch(authority -> authority.getAuthority().equals(roleToCheck));
-                })
+                .map(auth -> auth.getAuthorities().stream()
+                        .anyMatch(authority -> authority.getAuthority().equals(roleToCheck)))
                 .orElse(false);
     }
-}
 
+    private static boolean isInvalidAuthentication(Authentication authentication) {
+        return authentication == null
+                || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal());
+    }
+
+    private static String extractUsername(Object principal) {
+        if (principal instanceof UserDetails userDetails) {
+            return userDetails.getUsername();
+        } else if (principal instanceof String username) {
+            return username;
+        }
+        return null;
+    }
+}

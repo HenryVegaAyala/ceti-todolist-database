@@ -12,12 +12,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')") // Solo ADMIN puede acceder a todos los endpoints de este controlador
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 
     private final CreateUserUseCase createUserUseCase;
@@ -26,24 +25,16 @@ public class UserController {
     private final DeleteUserUseCase deleteUserUseCase;
     private final UpdateUserRolesUseCase updateUserRolesUseCase;
 
-    /**
-     * Obtener todos los usuarios
-     * GET /api/users
-     */
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {
-        List<UserResponse> users = getAllUsersUseCase.execute()
-                .stream()
-                .map(UserResponse::fromDomain)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(
+                getAllUsersUseCase.execute()
+                        .stream()
+                        .map(UserResponse::fromDomain)
+                        .toList()
+        );
     }
 
-    /**
-     * Obtener un usuario por ID
-     * GET /api/users/{id}
-     */
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         return getUserByIdUseCase.execute(id)
@@ -51,55 +42,27 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * Crear un nuevo usuario
-     * POST /api/users
-     */
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@RequestBody CreateUserRequest request) {
-        try {
-            User user = createUserUseCase.execute(
-                    request.getUsername(),
-                    request.getEmail(),
-                    request.getPassword(),
-                    request.getRoles()
-            );
-
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(UserResponse.fromDomain(user));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        User user = createUserUseCase.execute(
+                request.getUsername(),
+                request.getEmail(),
+                request.getPassword(),
+                request.getRoles()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(UserResponse.fromDomain(user));
     }
 
-    /**
-     * Actualizar los roles de un usuario
-     * PUT /api/users/{id}/roles
-     */
     @PutMapping("/{id}/roles")
-    public ResponseEntity<UserResponse> updateUserRoles(
-            @PathVariable Long id,
-            @RequestBody UpdateUserRolesRequest request) {
-        try {
-            User user = updateUserRolesUseCase.execute(id, request.getRoles());
-            return ResponseEntity.ok(UserResponse.fromDomain(user));
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<UserResponse> updateUserRoles(@PathVariable Long id, @RequestBody UpdateUserRolesRequest request) {
+        User user = updateUserRolesUseCase.execute(id, request.getRoles());
+        return ResponseEntity.ok(UserResponse.fromDomain(user));
     }
 
-    /**
-     * Eliminar un usuario
-     * DELETE /api/users/{id}
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        try {
-            deleteUserUseCase.execute(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+        deleteUserUseCase.execute(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

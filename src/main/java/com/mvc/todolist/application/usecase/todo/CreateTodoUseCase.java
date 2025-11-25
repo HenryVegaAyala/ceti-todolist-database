@@ -2,22 +2,21 @@ package com.mvc.todolist.application.usecase.todo;
 
 import com.mvc.todolist.domain.model.Todo;
 import com.mvc.todolist.domain.port.TodoRepositoryPort;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CreateTodoUseCase {
 
     private final TodoRepositoryPort todoRepositoryPort;
 
-    public CreateTodoUseCase(TodoRepositoryPort todoRepositoryPort) {
-        this.todoRepositoryPort = todoRepositoryPort;
-    }
-
     public Todo execute(String title, String description) {
-        Todo todo = new Todo();
-        todo.setTitle(title);
-        todo.setDescription(description);
-        todo.setCompleted(false);
+        Todo todo = Todo.builder()
+                .title(title)
+                .description(description)
+                .completed(false)
+                .build();
 
         return todoRepositoryPort.save(todo);
     }

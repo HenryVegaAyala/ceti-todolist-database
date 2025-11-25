@@ -28,49 +28,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        // Omitir el filtro JWT para endpoints públicos
-        String requestPath = request.getServletPath();
-        if (shouldNotFilter(requestPath)) {
+        if (shouldNotFilter(request.getServletPath())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String username;
-
+        String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwt = authHeader.substring(7);
-
-        // Validar que el token no esté vacío
+        String jwt = authHeader.substring(7);
         if (jwt.trim().isEmpty()) {
-            System.err.println("Token JWT vacío en la solicitud a: " + requestPath);
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            username = jwtService.extractUsername(jwt);
-
+            String username = jwtService.extractUsername(jwt);
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 if (jwtService.isTokenValid(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
+                            userDetails, null, userDetails.getAuthorities()
                     );
-                    authToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                } else {
-                    System.err.println("Token NO válido para usuario: " + username);
                 }
             }
         } catch (Exception e) {
@@ -83,26 +68,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean shouldNotFilter(String path) {
         return Arrays.stream(SecurityConstants.PUBLIC_ENDPOINTS)
-                .anyMatch(pattern -> {
-                    // Normalizar el path
-                    String normalizedPath = path.endsWith("/") ? path : path + "/";
-                    String normalizedPattern = pattern.endsWith("/") ? pattern : pattern + "/";
+                .anyMatch(pattern -> matchesPattern(path, pattern));
+    }
 
-                    // Manejar patrones con /**
-                    if (pattern.endsWith("/**")) {
-                        String basePattern = pattern.substring(0, pattern.length() - 3);
-                        return path.equals(basePattern) || path.startsWith(basePattern + "/");
-                    }
+    private boolean matchesPattern(String path, String pattern) {
+        if (pattern.endsWith("/**")) {
+            String basePattern = pattern.substring(0, pattern.length() - 3);
+            return path.equals(basePattern) || path.startsWith(basePattern + "/");
+        }
 
-                    // Manejar patrones con *
-                    if (pattern.contains("*")) {
-                        String regex = pattern.replace("**", ".*").replace("*", "[^/]*");
-                        return path.matches(regex);
-                    }
+        if (pattern.contains("*")) {
+            String regex = pattern.replace("**", ".*").replace("*", "[^/]*");
+            return path.matches(regex);
+        }
 
-                    // Coincidencia exacta
-                    return path.equals(pattern) || normalizedPath.equals(normalizedPattern);
-                });
+        String normalizedPath = path.endsWith("/") ? path : path + "/";
+        String normalizedPattern = pattern.endsWith("/") ? pattern : pattern + "/";
+        return path.equals(pattern) || normalizedPath.equals(normalizedPattern);
     }
 }
 

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -30,12 +29,13 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now().toString());
-        body.put("status", HttpServletResponse.SC_FORBIDDEN);
-        body.put("error", "Acceso denegado");
-        body.put("message", "No tienes permisos para acceder a este recurso");
-        body.put("path", request.getServletPath());
+        Map<String, Object> body = Map.of(
+                "timestamp", LocalDateTime.now().toString(),
+                "status", HttpServletResponse.SC_FORBIDDEN,
+                "error", "Acceso denegado",
+                "message", "No tienes permisos para acceder a este recurso",
+                "path", request.getServletPath()
+        );
 
         objectMapper.writeValue(response.getOutputStream(), body);
     }

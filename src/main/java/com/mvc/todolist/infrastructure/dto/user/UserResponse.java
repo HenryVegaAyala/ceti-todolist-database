@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toSet;
 
 @Data
 @Builder
@@ -25,17 +26,15 @@ public class UserResponse {
     private LocalDateTime updatedAt;
 
     public static UserResponse fromDomain(User user) {
-        return UserResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .enabled(user.isEnabled())
-                .roles(user.getRoles().stream()
-                        .map(Role::getName)
-                        .collect(Collectors.toSet()))
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
-                .build();
+        return new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.isEnabled(),
+                user.getRoles().stream().map(Role::getName).collect(toSet()),
+                user.getCreatedAt(),
+                user.getUpdatedAt()
+        );
     }
 }
 

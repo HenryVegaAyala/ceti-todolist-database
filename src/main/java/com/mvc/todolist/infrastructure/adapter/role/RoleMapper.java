@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RoleMapper {
+
     public Role toDomain(RoleEntity roleEntity) {
         if (roleEntity == null) {
             return null;
@@ -16,6 +17,7 @@ public class RoleMapper {
                 .updatedAt(roleEntity.getUpdatedAt())
                 .build();
     }
+
     public RoleEntity toEntity(Role role) {
         if (role == null) {
             return null;

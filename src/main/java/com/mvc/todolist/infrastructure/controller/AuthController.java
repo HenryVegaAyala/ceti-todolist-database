@@ -47,7 +47,6 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-
             User user = userRepositoryPort.findByUsername(request.getUsername())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 

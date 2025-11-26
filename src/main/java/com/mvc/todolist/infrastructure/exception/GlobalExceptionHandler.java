@@ -158,7 +158,8 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(status, error, message, request, null);
     }
 
-    private ErrorResponse buildErrorResponse(HttpStatus status, String error, String message, WebRequest request, Map<String, String> validationErrors) {
+    private ErrorResponse buildErrorResponse(HttpStatus status, String error, String message,
+                                             WebRequest request, Map<String, String> validationErrors) {
         return ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .status(status.value())

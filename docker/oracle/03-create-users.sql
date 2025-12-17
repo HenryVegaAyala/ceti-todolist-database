@@ -1,5 +1,5 @@
 -- Crear tabla de usuarios
-CREATE TABLE users
+CREATE TABLE IF NOT EXISTS users
 (
     id         NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     username   VARCHAR2(50) NOT NULL UNIQUE,
@@ -15,7 +15,7 @@ CREATE INDEX idx_users_username ON users (username);
 CREATE INDEX idx_users_email ON users (email);
 
 -- Crear tabla de roles
-CREATE TABLE roles
+CREATE TABLE IF NOT EXISTS  roles
 (
     id         NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name       VARCHAR2(50) NOT NULL UNIQUE,
@@ -28,7 +28,7 @@ CREATE TABLE roles
 CREATE INDEX idx_roles_name ON roles (name);
 
 -- Crear tabla intermedia user_roles
-CREATE TABLE user_roles
+CREATE TABLE IF NOT EXISTS  user_roles
 (
     user_id    NUMBER NOT NULL,
     role_id    NUMBER NOT NULL,

@@ -776,6 +776,53 @@ Oracle Database
 6. **Adapter** implementa persistencia con JPA
 7. **Repository** guarda en Oracle
 
+## 🐛 Solución de Problemas
+
+### Error: `/bin/bash^M: bad interpreter`
+
+Si al iniciar Docker ves este error:
+```
+/bin/bash^M: bad interpreter: No such file or directory
+```
+
+**Causa:** Los archivos `.sh` tienen finales de línea de Windows (CRLF) en lugar de Unix (LF).
+
+**Solución rápida:**
+```powershell
+# Ejecutar el script automático
+.\fix-line-endings.ps1
+
+# O manualmente:
+$file = '.\docker\oracle\01-setup.sh'
+$content = Get-Content $file -Raw
+$content = $content -replace "`r`n", "`n"
+[System.IO.File]::WriteAllText($file, $content, [System.Text.UTF8Encoding]::new($false))
+
+# Luego reinicia Docker
+docker-compose down
+docker-compose up -d
+```
+
+**Documentación completa:** Ver [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+
+### Error: "Port 1530 is already in use"
+
+Verifica que no haya otra instancia de Oracle corriendo:
+```powershell
+docker ps -a
+docker stop $(docker ps -q)
+```
+
+### Error de conexión a la base de datos
+
+Asegúrate de que Oracle esté listo:
+```powershell
+docker logs oracle-database -f
+# Espera: "DATABASE IS READY TO USE!"
+```
+
+---
+
 ## 📚 Recursos Adicionales
 
 ### Documentación Oficial
